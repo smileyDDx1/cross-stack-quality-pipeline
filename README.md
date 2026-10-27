@@ -160,10 +160,19 @@ including the paging count.
 After the fix, the regression suite (55 API tests, 8 E2E tests) still passes, and the endpoint performs like the
 task list (7 ms / 15 ms).
 
-**Measurement caveat.** On Windows with Docker Desktop, every request *with a body* showed a flat ~45 ms extra,
-for example ~48 ms for `POST /status`. Requests sent from inside the container took ~4.5 ms, so the delay is
-added by Docker Desktop's host-to-VM port forwarding, not by the API. The write latencies measured from a Windows
-host are therefore not representative. Linux CI runners don't have this forwarding layer.
+**Measurement caveat.** On Windows with Docker Desktop, every request *with a body* showed a flat ~45 ms extra.
+Requests sent from inside the container took ~4.5 ms, so the delay is added by Docker Desktop's host-to-VM port
+forwarding, not by the API. The GitHub Actions Linux runner, which has no such forwarding layer, confirmed this:
+
+| Write endpoint (median / p95) | Windows host, Docker Desktop (50 users) | Linux CI runner (25 users) |
+|---|---:|---:|
+| `POST /api/projects/{id}/tasks` | 49 / 56 ms | 4 / 9 ms |
+| `POST /api/tasks/{id}/status` | 50 / 58 ms | 4 / 13 ms |
+
+The two profiles differ in user count, but halving the load can't explain a 10× gap, and the in-container
+measurement gives the same ~4 ms. Write latencies measured from a Windows host are not representative. The
+`GET /api/projects` before/after comparison above is still valid, because GET requests have no body and
+don't pay this overhead.
 
 In CI, a shorter smoke profile (25 users, 60 s) runs as a gate: the job fails if any key endpoint's p95 exceeds
 500 ms or more than 1% of requests fail. A results table is posted to the job summary.
