@@ -1,0 +1,21 @@
+# .NET
+bin/
+obj/
+*.user
+TestResults/
+test-results/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Test output
+qa/reports/
+qa/test-results/
+
+# IDE
+.idea/
+.vs/
+.vscode/

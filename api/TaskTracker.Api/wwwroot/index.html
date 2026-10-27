@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Task Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#/projects">Task Tracker</a>
+    <div class="session" id="session" hidden>
+      <span data-testid="current-user" id="current-user"></span>
+      <button type="button" class="link" data-testid="logout" id="logout">Sign out</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="auth-view" class="card narrow" hidden>
+      <h1 id="auth-title">Sign in</h1>
+      <form id="auth-form" novalidate>
+        <label id="display-name-field" hidden>Display name
+          <input name="displayName" data-testid="auth-display-name" autocomplete="name">
+        </label>
+        <label>Email
+          <input name="email" type="email" data-testid="auth-email" autocomplete="email">
+        </label>
+        <label>Password
+          <input name="password" type="password" data-testid="auth-password" autocomplete="current-password">
+        </label>
+        <p class="error" data-testid="auth-error" id="auth-error" role="alert" hidden></p>
+        <button type="submit" data-testid="auth-submit" id="auth-submit">Sign in</button>
+      </form>
+      <p class="muted">
+        <span id="auth-switch-text">No account?</span>
+        <button type="button" class="link" data-testid="auth-toggle" id="auth-toggle">Create one</button>
+      </p>
+    </section>
+
+    <section id="projects-view" hidden>
+      <div class="card">
+        <h2>New project</h2>
+        <form id="project-form" class="row" novalidate>
+          <input name="name" placeholder="Project name" aria-label="Project name" data-testid="project-name">
+          <input name="description" placeholder="Description (optional)" aria-label="Project description"
+                 data-testid="project-description">
+          <button type="submit" data-testid="project-create">Create</button>
+        </form>
+        <p class="error" data-testid="project-error" id="project-error" role="alert" hidden></p>
+      </div>
+      <h2>Your projects</h2>
+      <p class="muted" id="projects-empty" data-testid="projects-empty" hidden>No projects yet.</p>
+      <ul class="list" id="project-list" data-testid="project-list"></ul>
+    </section>
+
+    <section id="project-view" hidden>
+      <a href="#/projects" data-testid="back-to-projects">&larr; All projects</a>
+      <h1 id="project-title" data-testid="project-title"></h1>
+      <p class="muted" id="project-description-text"></p>
+      <div class="card">
+        <form id="task-form" class="row" novalidate>
+          <input name="title" placeholder="Task title" aria-label="Task title" data-testid="task-title">
+          <select name="priority" aria-label="Priority" data-testid="task-priority">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+          </select>
+          <input name="dueDate" type="date" aria-label="Due date" data-testid="task-due-date">
+          <button type="submit" data-testid="task-add">Add task</button>
+        </form>
+        <p class="error" data-testid="task-error" id="task-error" role="alert" hidden></p>
+      </div>
+      <div class="toolbar">
+        <label>Show
+          <select id="status-filter" data-testid="status-filter">
+            <option value="">All</option>
+            <option value="todo">To do</option>
+            <option value="in_progress">In progress</option>
+            <option value="done">Done</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </label>
+      </div>
+      <p class="muted" id="tasks-empty" data-testid="tasks-empty" hidden>No tasks.</p>
+      <ul class="list" id="task-list" data-testid="task-list"></ul>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

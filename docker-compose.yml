@@ -1,0 +1,35 @@
+# Ephemeral test environment: the API plus a throwaway Postgres whose data lives in tmpfs.
+# CI gives each run its own project name (COMPOSE_PROJECT_NAME), so stacks never share containers or networks.
+name: tasktracker
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: tasktracker
+      POSTGRES_USER: tasktracker
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tasktracker}
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tasktracker -d tasktracker"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  api:
+    build: ./api
+    environment:
+      ConnectionStrings__Default: "Host=db;Port=5432;Database=tasktracker;Username=tasktracker;Password=${POSTGRES_PASSWORD:-tasktracker};Maximum Pool Size=50"
+      Jwt__Key: ${JWT_KEY:-local-dev-signing-key-not-for-production-0123456789}
+    ports:
+      - "${API_PORT:-8080}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/health > /dev/null || exit 1"]
+      interval: 3s
+      timeout: 3s
+      retries: 40
+      start_period: 5s
